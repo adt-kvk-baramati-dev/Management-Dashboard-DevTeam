@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --react-foreground: #1a202c;
+  --react-primary: #16a34a;
+  --react-primary-dark: #15803d;
+  --react-primary-glow: rgba(22, 163, 74, 0.15);
+  --react-secondary: #2563eb;
+  --react-secondary-dark: #1e40af;
+  --react-secondary-glow: rgba(37, 99, 235, 0.15);
+  --react-surface: rgba(255, 255, 255, 0.95);
+  --react-border: rgba(203, 213, 225, 0.6);
+  --react-glass-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.08);
+  --react-radius-sm: 0.5rem;
+  --react-radius-md: 0.875rem;
+  --react-radius-lg: 1.5rem;
+  --react-radius-xl: 2rem;
+  --react-transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="dark"] {
+  --react-foreground: #f8fafc;
+  --react-surface: rgba(15, 23, 42, 0.7);
+  --react-border: rgba(30, 41, 59, 0.5);
+  --react-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.bg-surface {
+  background: var(--react-surface);
+}
+
+.glass-panel {
+  background: var(--react-surface);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--react-border);
+  border-radius: var(--react-radius-lg);
+  box-shadow: var(--react-glass-shadow), 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  transition: var(--react-transition-smooth);
+}
+
+.glass-panel:hover {
+  transform: translateY(-6px);
+  border-color: rgba(203, 213, 225, 0.8);
+  box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.12), 0 2px 8px 0 rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #16a34a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.btn {
+  padding: 0.8rem 1.6rem;
+  border-radius: var(--react-radius-md);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: var(--react-transition-smooth);
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--react-primary) 0%, var(--react-primary-dark) 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 var(--react-primary-glow), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--react-primary-dark) 0%, #166534 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px 0 rgba(22, 163, 74, 0.25), 0 4px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--react-secondary) 0%, var(--react-secondary-dark) 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 var(--react-secondary-glow), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--react-secondary-dark) 0%, #1e3a8a 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px 0 rgba(37, 99, 235, 0.25), 0 4px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+.navbar {
+  background: var(--react-surface);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--react-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar .nav-link {
+  color: var(--react-foreground);
+  padding: 0.75rem 1rem;
+  border-radius: var(--react-radius-sm);
+  font-weight: 500;
+  transition: var(--react-transition-smooth);
+}
+
+.navbar .nav-link:hover {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.navbar .nav-link.active {
+  background: var(--react-primary-glow);
+  color: var(--react-primary-dark);
+}
+
+.theme-toggle {
+  color: var(--react-foreground);
+  transition: var(--react-transition-smooth);
+}
+
+.theme-toggle:hover {
+  color: var(--react-primary);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-teal {
+  0% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(20, 184, 166, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+}
+
+@keyframes pulse-orange {
+  0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--react-border);
+  border-radius: 10px;
+}
