@@ -35,13 +35,17 @@ export default function PortalLogin() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6">
-      <div className="max-w-md w-full glass-panel p-8 shadow-xl">
+      <div className="max-w-md w-full rounded-2xl border bg-card p-8 shadow-xl">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
             <LayoutDashboard className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">KVK Portal Login</h1>
-          <p className="text-slate-500 mt-2 text-sm">No registration page - accounts are created by admin only</p>
+          <h1 className="text-2xl font-bold text-slate-800">
+            AI ADT Foundation Login
+          </h1>
+          <p className="text-slate-500 mt-2 text-sm">
+            No registration page - accounts are created by admin only
+          </p>
         </div>
 
         {error && (
@@ -53,7 +57,9 @@ export default function PortalLogin() {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Address</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+              Email Address
+            </label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
@@ -62,13 +68,15 @@ export default function PortalLogin() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@kvk.in"
                 required
-                className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-[#e8eee2] border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Password</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
@@ -77,7 +85,7 @@ export default function PortalLogin() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-[#e8eee2] border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
               />
             </div>
           </div>
@@ -96,7 +104,12 @@ export default function PortalLogin() {
         </div>
 
         <div className="mt-4 text-center">
-          <Link to="/portal" className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">← Back to Portal Home</Link>
+          <Link
+            to="/portal"
+            className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+          >
+            ← Back to Portal Home
+          </Link>
         </div>
       </div>
     </div>

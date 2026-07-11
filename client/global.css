@@ -1,111 +1,126 @@
 /** @import must precede all other statements */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+}
+h1, h2, h3, h4 {
+  font-family: "Epilogue", "Plus Jakarta Sans", sans-serif;
+}
+
 @layer base {
-  /**
-   * Tailwind CSS theme - KVK Digital Intelligence
-   * Colors: Emerald Green (primary), Slate Dark (secondary), Indigo (accent)
-   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
-  */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 13% 20%;
+    /* ── Surfaces ── */
+    --background:  90 22% 97%;
+    --foreground:  110 25% 14%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 20%;
+    --card:        0 0% 100%;
+    --card-foreground: 110 25% 14%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 20%;
+    --popover:     0 0% 100%;
+    --popover-foreground: 110 25% 14%;
 
-    /* Emerald Green - Primary */
-    --primary: 160 84% 39%;
-    --primary-foreground: 210 40% 98%;
+    /* ── Brand green ── */
+    --primary:     112 52% 30%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Slate Dark - Secondary */
-    --secondary: 220 13% 20%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary:   100 22% 92%;
+    --secondary-foreground: 110 18% 22%;
 
-    --muted: 220 13% 80%;
-    --muted-foreground: 220 13% 40%;
+    --muted:       100 14% 88%;
+    --muted-foreground: 105 10% 42%;
 
-    /* Indigo - Accent */
-    --accent: 226 71% 50%;
-    --accent-foreground: 210 40% 98%;
+    --accent:      112 44% 22%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 95%;
-    --ring: 160 84% 39%;
+    --border:      105 18% 80%;
+    --input:       100 30% 96%;
+    --ring:        112 52% 30%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 13% 20%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 160 84% 39%;
+    /* ── Sidebar ── */
+    --sidebar-background: 116 48% 18%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary:    116 55% 13%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 226 71% 50%;
+    --sidebar-accent:     112 52% 30%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 13% 30%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-border:     116 30% 28%;
+    --sidebar-ring:       112 52% 30%;
+
+    /* ── Extended surface tokens ── */
+    --surface:                    90 22% 97%;
+    --surface-container-lowest:   0 0% 100%;
+    --surface-container-low:      95 20% 95%;
+    --surface-container:          95 16% 91%;
+    --surface-container-high:     95 14% 87%;
+    --on-surface:                 110 25% 14%;
+    --on-surface-variant:         108 12% 40%;
+    --outline-variant:            105 18% 80%;
+    --primary-fixed:              112 60% 88%;
+    --primary-fixed-dim:          112 50% 78%;
+    --on-primary-fixed-variant:   112 52% 22%;
+    --secondary-fixed:            100 30% 88%;
+    --secondary-fixed-dim:        100 22% 78%;
+    --on-secondary-fixed-variant: 100 22% 22%;
+    --tertiary-fixed:             38 90% 88%;
+    --tertiary-fixed-dim:         38 80% 76%;
+    --on-tertiary-fixed:          38 60% 22%;
+    --error:                      0 72% 51%;
+    --on-error:                   0 0% 100%;
+    --on-primary:                 0 0% 100%;
   }
 
   .dark {
-    --background: 220 13% 10%;
-    --foreground: 210 40% 98%;
-
-    --card: 220 13% 15%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 220 13% 15%;
-    --popover-foreground: 210 40% 98%;
-
-    /* Emerald Green - Primary */
-    --primary: 160 84% 45%;
-    --primary-foreground: 220 13% 10%;
-
-    /* Slate Dark - Secondary */
-    --secondary: 220 13% 25%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 220 13% 30%;
-    --muted-foreground: 210 40% 75%;
-
-    /* Indigo - Accent */
-    --accent: 226 71% 55%;
-    --accent-foreground: 220 13% 10%;
-
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 13% 25%;
-    --input: 220 13% 20%;
-    --ring: 160 84% 45%;
-
-    --sidebar-background: 220 13% 10%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 160 84% 45%;
-    --sidebar-primary-foreground: 220 13% 10%;
-    --sidebar-accent: 226 71% 55%;
-    --sidebar-accent-foreground: 220 13% 10%;
-    --sidebar-border: 220 13% 20%;
-    --sidebar-ring: 160 84% 45%;
+    --background:  110 18% 10%;
+    --foreground:  0 0% 95%;
+    --card:        110 16% 13%;
+    --card-foreground: 0 0% 95%;
+    --popover:     110 16% 15%;
+    --popover-foreground: 0 0% 95%;
+    --primary:     112 58% 38%;
+    --primary-foreground: 0 0% 100%;
+    --secondary:   110 14% 22%;
+    --secondary-foreground: 0 0% 90%;
+    --muted:       110 12% 26%;
+    --muted-foreground: 0 0% 68%;
+    --accent:      112 50% 26%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border:      110 14% 22%;
+    --input:       110 14% 16%;
+    --ring:        112 58% 38%;
+    --sidebar-background: 116 52% 14%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary:    116 58% 10%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent:     0 72% 51%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border:     116 52% 20%;
+    --sidebar-ring:       116 52% 14%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(112 52% 30% / 0.07) 0%, transparent 70%),
+      linear-gradient(180deg, hsl(90 22% 97%) 0%, hsl(90 22% 97%) 100%);
+    min-height: 100vh;
   }
 
   :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
@@ -113,9 +128,47 @@
     word-break: break-word;
   }
 
-  pre,
-  code {
-    overflow-x: auto;
-    white-space: pre;
-  }
+  pre, code { overflow-x: auto; white-space: pre; }
+}
+
+/* ── Scrollbar ── */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Footer ── */
+.builder-footer {
+  background: linear-gradient(135deg, hsl(116 55% 13%) 0%, hsl(116 48% 18%) 100%);
+  border-top: 1px solid hsl(116 30% 28%);
+}
+
+/* ── Elevated card ── */
+.elevated-surface {
+  @apply rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-200;
+}
+.elevated-surface:hover {
+  @apply border-primary/25 shadow-md;
+}
+
+/* ── Gradient text utility ── */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(112 52% 30%) 0%, hsl(112 52% 45%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glass card ── */
+.glass-card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.5);
 }

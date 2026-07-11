@@ -1,53 +1,101 @@
-node_modules
-dist
+# ============================
+# Git
+# ============================
 .git
 .gitignore
-README.md
+
+# ============================
+# Dependencies
+# ============================
+node_modules
+**/node_modules/**
+
+# ============================
+# Build Output
+# ============================
+dist
+dist-ssr
+build
+.builder
+
+# ============================
+# Generated GeoJSON (Hosted on AWS S3)
+# ============================
+public/geojson
+
+# ============================
+# Environment
+# ============================
 .env
-.env.local
-.env.development
-.env.test
-.env.production
+.env.*
+!.env.example
+
+# ============================
+# Logs
+# ============================
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.DS_Store
-.vscode
-.idea
+pnpm-debug.log*
+
+# ============================
+# Coverage
+# ============================
+coverage
+.nyc_output
+
+# ============================
+# Cache
+# ============================
+.cache
+.eslintcache
+
+# ============================
+# Temporary Files
+# ============================
+tmp
+*.tmp
+*.tmp.*
 *.swp
 *.swo
 *~
+
+# ============================
+# IDE
+# ============================
+.vscode
+.idea
 .cursor
-coverage
-.nyc_output
-.eslintcache
-*.log
-*.lock
-*.tmp
-*.tmp.*
-log.txt
 
+# ============================
+# OS Files
+# ============================
 .DS_Store
-node_modules
-**/node_modules/**
-build
-data
-.env
-load-ids.txt
+Thumbs.db
 
-server
-tmp
-types
-.git
-.gitignore
-dist
-service
+# ============================
+# Tests
+# ============================
 tests
 fixtures-pages
 fixtures-apps
 
-# Netlify
-.netlify
+# ============================
+# Data
+# ============================
+data
+
+# ============================
+# Python
+# ============================
+__pycache__/
+*.pyc
+
+# ============================
+# ML Packages (Keep Existing)
+# ============================
 packages/ml-air/lib
 packages/ml-air/bin
 packages/ml-air/project
@@ -55,8 +103,22 @@ packages/ml-air/share
 packages/ml-air/random_forest_classification/
 packages/ml-air/__pycache__/
 packages/ml-air/app/__pycache__/
+
 packages/vcp-common/native-bridge/build
 packages/vcp-common/_tests_/dataset-ranking.csv
-node_modules/
+
+# ============================
+# Netlify
+# ============================
+.netlify
+
+# ============================
+# Misc
+# ============================
 Dockerfile
-.gitignore
+README.md
+load-ids.txt
+log.txt
+service
+server
+types

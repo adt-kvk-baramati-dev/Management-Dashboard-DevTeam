@@ -1,12 +1,22 @@
 import { useState, useRef, ChangeEvent, DragEvent } from "react";
-import { UploadCloud, FileCode, CheckCircle, AlertCircle, X, Download } from "lucide-react";
+import {
+  UploadCloud,
+  FileCode,
+  CheckCircle,
+  AlertCircle,
+  X,
+  Download,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function UploadData() {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [uploadState, setUploadState] = useState<
+    "idle" | "uploading" | "success" | "error"
+  >("idle");
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,7 +31,10 @@ export default function UploadData() {
   };
 
   const validateAndSetFile = (selectedFile: File) => {
-    if (selectedFile.type !== "application/json" && !selectedFile.name.endsWith(".json")) {
+    if (
+      selectedFile.type !== "application/json" &&
+      !selectedFile.name.endsWith(".json")
+    ) {
       setUploadState("error");
       setMessage("Please select a JSON file only.");
       return;
@@ -81,13 +94,17 @@ export default function UploadData() {
 
       const records = Array.isArray(parsed)
         ? parsed
-        : parsed && typeof parsed === "object" && Array.isArray((parsed as any).records)
+        : parsed &&
+            typeof parsed === "object" &&
+            Array.isArray((parsed as any).records)
           ? (parsed as any).records
           : null;
 
       if (!records || records.length === 0) {
         setUploadState("error");
-        setMessage("JSON must be an array or an object containing a non-empty records array.");
+        setMessage(
+          "JSON must be an array or an object containing a non-empty records array.",
+        );
         return;
       }
 
@@ -99,7 +116,9 @@ export default function UploadData() {
           const next = prev < 90 ? prev + 15 : 90;
           if (next >= 90 && !serverProcessingShown) {
             serverProcessingShown = true;
-            setMessage("Server is processing your records. Large files may take a few minutes...");
+            setMessage(
+              "Server is processing your records. Large files may take a few minutes...",
+            );
           }
           return next;
         });
@@ -139,7 +158,9 @@ export default function UploadData() {
     } catch (error: any) {
       setUploadState("error");
       if (error?.name === "AbortError") {
-        setMessage("Upload timed out after 5 minutes. Please try again with a smaller file or split it into chunks.");
+        setMessage(
+          "Upload timed out after 5 minutes. Please try again with a smaller file or split it into chunks.",
+        );
       } else {
         setMessage("Network error. Could not connect to the server.");
       }
@@ -158,11 +179,15 @@ export default function UploadData() {
   return (
     <div className="min-h-screen p-6 md:p-12 max-w-2xl mx-auto flex flex-col justify-center">
       <div className="mb-8 text-center">
-        <h1 className="title text-3xl md:text-4xl text-emerald-600 mb-2">Krishi Vidnyan Kendra</h1>
-        <p className="text-slate-500 font-medium">Farmer Data Management System - Upload Dataset</p>
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary mb-2">
+          Krishi Vidnyan Kendra
+        </h1>
+        <p className="text-slate-500 font-medium">
+          Farmer Data Management System - Upload Dataset
+        </p>
       </div>
 
-      <div className="glass-panel p-8 shadow-xl relative overflow-hidden">
+      <div className="rounded-2xl border bg-card p-8 shadow-xl relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {uploadState === "success" && (
@@ -192,8 +217,8 @@ export default function UploadData() {
           onDrop={handleDrop}
           className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 ${
             isHovering
-              ? "border-emerald-500 bg-emerald-50"
-              : "border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-emerald-400"
+              ? "border-green-500 bg-green-50"
+              : "border-green-300 bg-[#e8eee2] hover:bg-green-50 hover:border-green-400"
           } ${file ? "hidden" : "block"}`}
         >
           <input
@@ -203,22 +228,29 @@ export default function UploadData() {
             ref={fileInputRef}
             onChange={handleFileChange}
           />
-          <UploadCloud className="w-16 h-16 mx-auto mb-4 text-emerald-500/80" />
-          <p className="text-lg font-semibold text-slate-700 mb-1">Click or drag JSON file here</p>
-          <p className="text-sm text-slate-500">.json files only • Max 200MB</p>
+          <UploadCloud className="w-16 h-16 mx-auto mb-4 text-green-500/80" />
+          <p className="text-lg font-semibold text-gray-700 mb-1">
+            Click or drag JSON file here
+          </p>
+          <p className="text-sm text-gray-500">.json files only • Max 200MB</p>
         </div>
 
         {file && (
-          <div className="animate-fade-in bg-slate-50 border border-emerald-200 p-5 rounded-xl flex items-center justify-between shadow-sm">
+          <div className="animate-fade-in bg-[#e8eee2] border border-green-200 p-5 rounded-xl flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg">
+              <div className="p-3 bg-green-100 text-green-600 rounded-lg">
                 <FileCode className="w-8 h-8" />
               </div>
               <div className="max-w-[200px] md:max-w-xs overflow-hidden">
-                <p className="font-semibold text-slate-800 truncate" title={file.name}>
+                <p
+                  className="font-semibold text-gray-800 truncate"
+                  title={file.name}
+                >
                   {file.name}
                 </p>
-                <p className="text-sm text-slate-500">{formatFileSize(file.size)}</p>
+                <p className="text-sm text-gray-500">
+                  {formatFileSize(file.size)}
+                </p>
               </div>
             </div>
             <button
@@ -234,45 +266,49 @@ export default function UploadData() {
 
         {uploadState === "uploading" && (
           <div className="mt-8 animate-fade-in">
-            <div className="flex justify-between text-sm font-medium text-slate-600 mb-2">
+            <div className="flex justify-between text-sm font-medium text-gray-600 mb-2">
               <span>{message}</span>
               <span>{progress}%</span>
             </div>
-            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-green-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-300 ease-out"
+                className="h-full bg-green-600 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
         )}
 
-        <button
+        <Button
           onClick={uploadFile}
           disabled={!file || uploadState === "uploading" || uploadState === "success"}
-          className={`w-full mt-8 btn btn-primary py-4 text-lg shadow-lg ${
-            !file || uploadState === "uploading" || uploadState === "success"
-              ? "opacity-50 cursor-not-allowed"
-              : ""
-          }`}
+          size="lg"
+          className="w-full mt-8 h-12 text-lg"
         >
-          {uploadState === "uploading" ? "Uploading Dataset..." : "Upload and Process File"}
-        </button>
+          {uploadState === "uploading"
+            ? "Uploading Dataset..."
+            : "Upload and Process File"}
+        </Button>
 
-        <div className="mt-8 flex items-center justify-center gap-4 text-sm font-medium text-slate-500">
-          <div className="h-px w-16 bg-slate-200" />
+        <div className="mt-8 flex items-center justify-center gap-4 text-sm font-medium text-gray-500">
+          <div className="h-px w-16 bg-green-200" />
           <span>or</span>
-          <div className="h-px w-16 bg-slate-200" />
+          <div className="h-px w-16 bg-green-200" />
         </div>
 
-        <Link to="/data" className="mt-6 w-full btn btn-secondary py-3 bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-emerald-600 hover:border-emerald-300 shadow-sm">
-          <Download className="w-4 h-4 mr-2" />
-          View Farmers Data Dashboard
-        </Link>
+        <Button asChild variant="outline" className="mt-6 w-full h-11">
+          <Link to="/data">
+            <Download className="w-4 h-4" />
+            View Farmers Data Dashboard
+          </Link>
+        </Button>
       </div>
 
       <div className="mt-8 flex justify-center">
-        <Link to="/" className="text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1 transition-colors">
+        <Link
+          to="/"
+          className="text-green-600 hover:text-green-700 font-medium inline-flex items-center gap-1 transition-colors"
+        >
           &larr; Back to App Home
         </Link>
       </div>

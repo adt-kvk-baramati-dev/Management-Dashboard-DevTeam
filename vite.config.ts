@@ -1,13 +1,28 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import { createServer } from "./server";
+
+const apiProxyTarget = String(process.env.VITE_API_PROXY_TARGET ?? "").trim();
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: apiProxyTarget
+      ? {
+          "/api": {
+            target: apiProxyTarget,
+            changeOrigin: true,
+            secure: false,
+          },
+        }
+      : undefined,
     fs: {
       allow: [".", "./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],

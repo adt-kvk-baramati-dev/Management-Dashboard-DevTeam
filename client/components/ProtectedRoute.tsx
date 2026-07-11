@@ -10,9 +10,13 @@ export default function ProtectedRoute({
 }) {
   const { user, profile, loading } = useAuth();
 
+  const resolvedRole: "admin" | "employee" | null =
+    profile?.role ??
+    (user?.role === "admin" || user?.role === "employee" ? user.role : null);
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-slate-500">
+      <div className="min-h-screen flex items-center justify-center text-on-surface-variant">
         Checking session...
       </div>
     );
@@ -22,8 +26,15 @@ export default function ProtectedRoute({
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && (!profile || !allowedRoles.includes(profile.role))) {
-    return <Navigate to="/" replace />;
+  if (allowedRoles && resolvedRole && !allowedRoles.includes(resolvedRole)) {
+    const fallback =
+      resolvedRole === "admin" ? "/admin/dashboard" : "/employee/dashboard";
+    return <Navigate to={fallback} replace />;
+  }
+
+  // If a role is required but we couldn't resolve it, force a clean login.
+  if (allowedRoles && !resolvedRole) {
+    return <Navigate to="/login" replace />;
   }
 
   return children;

@@ -1,268 +1,626 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  BarChart3,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import {
   Users,
   AlertCircle,
-  CheckCircle,
   MapPin,
-  Settings,
-  LogOut,
-  Menu,
-  X,
   TrendingUp,
-  Database,
-  Sprout,
-  Zap,
+  CheckCircle2,
+  ListTodo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
+import AdminLayout from "../components/AdminLayout";
+import { useAuth } from "../lib/AuthProvider";
+import FarmerMap from "@/components/FarmerMap";
 
 export default function AdminDashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { token } = useAuth();
+  const [stats, setStats] = useState<any>(null);
+  const [recentComplaints, setRecentComplaints] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const menuItems = [
-    { icon: BarChart3, label: "Dashboard", href: "/admin/dashboard" },
-    { icon: Database, label: "Farmers Database", href: "#farmers" },
-    { icon: AlertCircle, label: "Complaints Management", href: "/admin/complaints" },
-    { icon: Zap, label: "Complaint Routing", href: "#routing" },
-    { icon: Users, label: "Employees", href: "/admin/users" },
-    { icon: Sprout, label: "Field Activities", href: "#activities" },
-    { icon: TrendingUp, label: "Outreach Programs", href: "#outreach" },
-    { icon: MapPin, label: "Random Sampling", href: "#sampling" },
-    { icon: MapPin, label: "GIS Map", href: "/admin/gis-map" },
-    { icon: BarChart3, label: "Analytics", href: "/admin/analytics" },
-    { icon: Settings, label: "Settings", href: "#settings" },
-  ];
+  const [isNotifyOpen, setIsNotifyOpen] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [reportGenerating, setReportGenerating] = useState(false);
+  const [notificationSending, setNotificationSending] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex">
-      {/* Sidebar */}
+  useEffect(() => {
+    if (token) {
+      fetchDashboardData();
+    }
+  }, [token]);
+
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const [statsRes, complaintsRes] = await Promise.all([
+        fetch("/api/stats/admin", { headers: { Authorization: `Bearer ${token}` } }),
+        fetch("/api/complaints", { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+
+      const statsJson = await statsRes.json();
+      const complaintsJson = await complaintsRes.json();
+
+      setStats(statsJson);
+      setRecentComplaints((complaintsJson.complaints || []).slice(0, 5));
+    } catch (error) {
+      console.error("Dashboard fetch error:", error);
+      setLoadError("Couldn’t load dashboard data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateReport = async () => {
+    if (!token) return;
+    setReportGenerating(true);
+    try {
+      const response = await fetch("/api/admin/generate-report", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "comprehensive",
+          dateRange: "last_30_days"
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate report");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `kvk-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Report generated",
+        description: "Your PDF report download has started.",
+      });
+    } catch (error) {
+      console.error("Report generation error:", error);
+      toast({
+        title: "Report failed",
+        description: "Couldn’t generate the report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setReportGenerating(false);
+    }
+  };
+
+  const sendNotification = async (message: string) => {
+    if (!token) return;
+    const trimmed = message.trim();
+    if (!trimmed) return;
+
+    setNotificationSending(true);
+
+    try {
+      const response = await fetch("/api/admin/send-notification", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: trimmed }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Notification sent",
+          description: "Employees will receive your message shortly.",
+        });
+        setIsNotifyOpen(false);
+        setNotifyMessage("");
+      } else {
+        throw new Error("Failed to send notification");
+      }
+    } catch (error) {
+      console.error("Notification error:", error);
+      toast({
+        title: "Send failed",
+        description: "Couldn’t send the notification. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setNotificationSending(false);
+    }
+  };
+
+  const STATUS_COLORS: Record<string, string> = {
+    Pending: "#f59e0b",
+    Solved: "#10b981",
+    "Red Zone": "#e20b0b",
+  };
+
+  const getStatusColor = (status: string) =>
+    STATUS_COLORS[status] ?? "hsl(var(--muted-foreground))";
+
+  const ChartTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || payload.length === 0) return null;
+
+    return (
       <div
-        className={`${
-          sidebarOpen ? "w-64" : "w-20"
-        } bg-slate-900/80 backdrop-blur-md border-r border-slate-700/50 fixed h-full z-40 transition-all duration-300 overflow-y-auto`}
+        className={cn(
+          "rounded-xl border border-outline-variant/30",
+          "bg-surface-container-lowest px-3 py-2 shadow-sm",
+        )}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700/50">
-          <div className={`flex items-center gap-2 ${!sidebarOpen && "justify-center w-12"}`}>
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Sprout className="w-6 h-6 text-white" />
+        {label ? (
+          <p className="text-xs font-semibold text-on-surface mb-1">{label}</p>
+        ) : null}
+        <div className="space-y-0.5">
+          {payload.map((item: any, idx: number) => (
+            <div key={item.dataKey ?? idx} className="flex items-center justify-between gap-6">
+              <span className="text-xs text-on-surface-variant">
+                {item.name ?? item.dataKey}
+              </span>
+              <span className="text-xs font-semibold text-on-surface tabular-nums">
+                {item.value}
+              </span>
             </div>
-            {sidebarOpen && <span className="text-lg font-bold text-white truncate">KVK</span>}
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const chartData = useMemo(() => stats?.chartData || [], [stats]);
+  const pieData = useMemo(() => stats?.pieData || [], [stats]);
+  const cardBase =
+    "bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm";
+  const cardHover =
+    "transition-all duration-200 hover:shadow-md hover:border-outline-variant/60";
+
+  const cardHeaderClass = "pb-4 border-b border-outline-variant/20";
+  const cardBodyClass = "pt-4";
+
+  const StatCard = ({ title, value, icon: Icon, trend, colorClass, href }: any) => {
+    const CardContent = (
+      <div className={cn( cardBase , "relative overflow-hidden" , "h-full p-6 group cursor-pointer","rounded-3xl","shadow-lg hover:shadow-[0_20px_50px_rgba(59,130,246,0.25)]" ,"hover:-translate-y-1","transition-all duration-300",cardHover,)}>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-400" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2 group-hover:text-primary transition-colors">
+                    {title}
+                </p>
+    
+                <h3 className="text-4xl font-bold tracking-tight text-on-surface leading-none tabular-nums">
+                  {Number(value).toLocaleString()}
+                </h3>
+              </div>
+              <div
+                className={cn(
+                  "p-4 rounded-2xl",
+                  "shadow-sm",
+                  "group-hover:scale-110",
+                  "transition-all duration-300",
+                  colorClass,
+                )}
+              >
+                <Icon className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-xs text-on-surface-variant font-medium">
+                {trend}
+              </p>
+            
+              <span className="px-2 py-1 text-[10px] rounded-full bg-green-100 text-green-700 font-semibold">
+                Live
+              </span>
+            </div>
           </div>
-          {sidebarOpen && (
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="text-slate-400 hover:text-slate-200"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+    );
+
+    if (href) {
+      return (
+        <Link
+          to={href}
+          className={cn(
+            "block no-underline rounded-2xl",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
           )}
+        >
+          {CardContent}
+        </Link>
+      );
+    }
+    return CardContent;
+  };
+
+  const statusPillClass = (status: string) => {
+    const s = (status || "").toLowerCase();
+    if (s === "resolved" || s === "solved") {
+      return "bg-primary-fixed/60 text-on-primary-fixed-variant border-primary-fixed-dim/60";
+    }
+    if (s === "pending") {
+      return "bg-tertiary-fixed/70 text-on-tertiary-fixed border-tertiary-fixed-dim/70";
+    }
+    return "bg-secondary-fixed/70 text-on-secondary-fixed-variant border-secondary-fixed-dim/70";
+  };
+return (
+  <AdminLayout title="farmers, complaints...">
+
+    {/* Dashboard Header */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+
+      <div className="flex items-center gap-4">
+        <div className="h-14 w-14 rounded-3xl bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-500 flex items-center justify-center text-white text-2xl shadow-lg">
+          📊
         </div>
 
-        {/* Menu Items */}
-        <nav className="p-4 space-y-2">
-          {menuItems.map((item, i) => {
-            const isExternal = item.href.startsWith("#");
-            return isExternal ? (
-              <a
-                key={i}
-                href={item.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800/50 hover:text-emerald-400 transition-colors duration-200"
-                title={!sidebarOpen ? item.label : undefined}
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
-              </a>
-            ) : (
-              <Link
-                key={i}
-                to={item.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800/50 hover:text-emerald-400 transition-colors duration-200"
-                title={!sidebarOpen ? item.label : undefined}
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
-              </Link>
-            );
-          })}
-        </nav>
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            Admin Dashboard
+          </h1>
 
-        {/* Logout */}
-        <div className="absolute bottom-4 left-4 right-4">
-          <Link to="/login">
+          <p className="text-sm text-slate-500 mt-1">
+            Real-time monitoring of farmers, complaints, outreach and field activities
+          </p>
+        </div>
+      </div>
+
+      {/* <div className="flex gap-3">
+
+        <Button
+          onClick={generateReport}
+          disabled={loading || reportGenerating}
+          className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          {reportGenerating ? "Generating..." : "Generate Report"}
+        </Button>
+
+        <Dialog
+          open={isNotifyOpen}
+          onOpenChange={setIsNotifyOpen}
+        >
+          <DialogTrigger asChild>
             <Button
               variant="outline"
-              className={`w-full border-slate-600 text-slate-300 hover:bg-slate-800 ${
-                !sidebarOpen && "p-2"
-              }`}
+              disabled={loading}
+              className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <LogOut className="w-4 h-4" />
-              {sidebarOpen && <span className="ml-2">Logout</span>}
+              Send Notification
             </Button>
-          </Link>
-        </div>
-      </div>
+          </DialogTrigger>
 
-      {/* Main Content */}
-      <div className={`${sidebarOpen ? "ml-64" : "ml-20"} flex-1 transition-all duration-300`}>
-        {/* Header */}
-        <div className="h-16 bg-slate-800/50 backdrop-blur-md border-b border-slate-700/50 flex items-center px-6">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-slate-400 hover:text-slate-200 mr-4"
-          >
-            {sidebarOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
+          <DialogContent
+            className={cn(
+              "max-w-xl",
+              "bg-surface-container-lowest",
+              "text-on-surface",
+              "border border-outline-variant/30",
+              "rounded-2xl shadow-sm"
             )}
-          </button>
-          <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
+          >
+            <DialogHeader>
+              <DialogTitle className="font-headline text-on-surface">
+                Send Notification
+              </DialogTitle>
+
+              <DialogDescription className="text-on-surface-variant">
+                This message will be sent to employees.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                Message
+              </p>
+
+              <Input
+                value={notifyMessage}
+                onChange={(e) =>
+                  setNotifyMessage(e.target.value)
+                }
+                placeholder="E.g., Field visit schedule updated for today"
+                className={cn(
+                  "rounded-xl",
+                  "bg-surface-container-low",
+                  "border-outline-variant/40",
+                  "text-on-surface"
+                )}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setIsNotifyOpen(false)
+                }
+              >
+                Cancel
+              </Button>
+
+              <Button
+                onClick={() =>
+                  sendNotification(notifyMessage)
+                }
+                disabled={
+                  notificationSending ||
+                  notifyMessage.trim().length === 0
+                }
+              >
+                {notificationSending
+                  ? "Sending..."
+                  : "Send"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+      </div> */}
+    </div>
+
+      {loadError ? (
+        <div
+          className={cn(cardBase, cardHover, "p-4 bg-surface-container-low")}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-on-surface">Unable to load</p>
+              <p className="text-sm text-on-surface-variant mt-1">{loadError}</p>
+            </div>
+            <Button variant="outline" onClick={fetchDashboardData} className="rounded-xl">
+              Retry
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-5 lg:gap-6">
+        {loading ? (
+          Array.from({ length: 6 }).map((_, idx) => (
+            <div key={idx} className={cn(cardBase, "p-5")}>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-24 bg-surface-container-low" />
+                  <Skeleton className="h-7 w-16 bg-surface-container-low" />
+                </div>
+                <Skeleton className="h-10 w-10 rounded-xl bg-surface-container-low" />
+              </div>
+                <Skeleton className="h-3 w-28 rounded-xl bg-surface-container-low" />
+            </div>
+          ))
+        ) : (
+          <>
+            <StatCard
+              title="Total Farmers"
+              value={stats?.totalFarmers || 0}
+              icon={Users}
+              trend="Real-time count"
+              colorClass="bg-primary/10 text-primary"
+              href="/admin/farmers"
+            />
+            <StatCard
+              title="Total Complaints"
+              value={stats?.totalComplaints || 0}
+              icon={ListTodo}
+              trend="All reported issues"
+              colorClass="bg-secondary-fixed/70 text-on-secondary-fixed-variant"
+              href="/admin/complaints"
+            />
+            <StatCard
+              title="Pending Complaints"
+              value={stats?.pendingComplaints || 0}
+              icon={AlertCircle}
+              trend="Requires attention"
+              colorClass="bg-tertiary-fixed/70 text-on-tertiary-fixed"
+              href="/admin/complaints?status=Pending"
+            />
+            <StatCard
+              title="Outreach Sessions"
+              value={stats?.outreachSessions || 0}
+              icon={TrendingUp}
+              trend="Programs completed"
+              colorClass="bg-primary-fixed/60 text-on-primary-fixed-variant"
+              href="/admin/outreach"
+            />
+            <StatCard
+              title="Random Sampling"
+              value={stats?.samplingActivities || 0}
+              icon={MapPin}
+              trend="Field samples taken"
+              colorClass="bg-tertiary-fixed/70 text-on-tertiary-fixed"
+              href="/admin/sampling"
+            />
+            <StatCard
+              title="Active Employees"
+              value={stats?.activeEmployees || 0}
+              icon={CheckCircle2}
+              trend="Currently active"
+              colorClass="bg-secondary-fixed/70 text-on-secondary-fixed-variant"
+              href="/admin/employees"
+            />
+            {/* Red Alert Card */}
+            
+          </>
+        )}
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Monthly Trend */}
+        <div className={cn(cardBase, cardHover, "lg:col-span-2 p-6")}>
+          <div className={cn("flex items-start justify-between gap-4", cardHeaderClass)}>
+            <div>
+              <h3 className="font-headline font-bold text-on-surface">
+                Monthly Complaints Flow
+              </h3>
+              <p className="text-xs text-on-surface-variant mt-1">
+                Trend over time based on complaint volume.
+              </p>
+            </div>
+          </div>
+
+          <div className={cn(cardBodyClass, "h-[250px] w-full")}>
+            {loading ? (
+              <div className="h-full w-full">
+                <Skeleton className="h-full w-full rounded-xl bg-surface-container-low" />
+              </div>
+            ) : chartData.length === 0 ? (
+              <div className={cn(
+                "h-full w-full rounded-xl border border-outline-variant/20",
+                "bg-surface-container-low flex items-center justify-center",
+              )}>
+                <p className="text-sm text-on-surface-variant">No chart data yet.</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
+                  <XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  />
+                  <Tooltip content={<ChartTooltip />} />
+                  <Line
+                    type="monotone"
+                    dataKey="complaints"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={3}
+                    dot={{
+                      r: 3,
+                      fill: "hsl(var(--primary))",
+                      strokeWidth: 2,
+                      stroke: "hsl(var(--background))",
+                    }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-8">
-          {/* Dashboard Title */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome, Administrator</h2>
-            <p className="text-slate-400">Monitor and manage KVK operations in real-time</p>
+        {/* Status Pie */}
+        <div className={cn(cardBase, cardHover, "p-6 flex flex-col")}>
+          <div className={cn(cardHeaderClass, "mb-3")}>
+            <h3 className="font-headline font-bold text-on-surface">
+              Complaint Status
+            </h3>
+            <p className="text-xs text-on-surface-variant mt-1">
+              Breakdown by resolution state.
+            </p>
           </div>
-
-          {/* Widgets Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Total Farmers */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Total Farmers</h3>
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-emerald-400" />
+          <div className={cn(cardBodyClass, "flex-1 flex items-center justify-center")}>
+            <div className="h-[200px] w-full">
+              {loading ? (
+                <Skeleton className="h-full w-full rounded-xl bg-surface-container-low" />
+              ) : pieData.length === 0 ? (
+                <div className={cn(
+                  "h-full w-full rounded-xl border border-outline-variant/20",
+                  "bg-surface-container-low flex items-center justify-center",
+                )}>
+                  <p className="text-sm text-on-surface-variant">No status data yet.</p>
                 </div>
-              </div>
-              <p className="text-4xl font-bold text-white mb-2">10,234</p>
-              <p className="text-emerald-400 text-xs font-semibold">↑ 12% from last month</p>
-            </div>
-
-            {/* Total Complaints */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-indigo-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Total Complaints</h3>
-                <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-indigo-400" />
-                </div>
-              </div>
-              <p className="text-4xl font-bold text-white mb-2">562</p>
-              <p className="text-indigo-400 text-xs font-semibold">↑ 8% from last month</p>
-            </div>
-
-            {/* Pending Complaints */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-yellow-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Pending Complaints</h3>
-                <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-yellow-400" />
-                </div>
-              </div>
-              <p className="text-4xl font-bold text-white mb-2">87</p>
-              <p className="text-yellow-400 text-xs font-semibold">15% of total</p>
-            </div>
-
-            {/* Resolved Complaints */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Resolved Complaints</h3>
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
-                </div>
-              </div>
-              <p className="text-4xl font-bold text-white mb-2">475</p>
-              <p className="text-emerald-400 text-xs font-semibold">↑ 9% from last month</p>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {pieData.map((entry: any, index: number) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={getStatusColor(entry.name)}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<ChartTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
-
-          {/* Secondary Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Active Employees */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Active Employees</h3>
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-emerald-400" />
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-white mb-2">156</p>
-              <p className="text-slate-400 text-xs">24 field officers, 18 domain experts</p>
-            </div>
-
-            {/* Outreach Programs */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-indigo-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Outreach Programs</h3>
-                <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-indigo-400" />
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-white mb-2">34</p>
-              <p className="text-slate-400 text-xs">This quarter conducted</p>
-            </div>
-
-            {/* Random Sampling */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-400 font-semibold text-sm">Sampling Reports</h3>
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-emerald-400" />
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-white mb-2">289</p>
-              <p className="text-slate-400 text-xs">Ground truth verifications</p>
-            </div>
-          </div>
-
-          {/* Data Visualization Placeholder */}
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chart Placeholder 1 */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm">
-              <h3 className="text-white font-semibold mb-6">District-wise Farmer Registration</h3>
-              <div className="h-64 flex items-center justify-center bg-slate-700/20 rounded-lg border border-slate-600/30">
-                <p className="text-slate-500 text-sm">Bar Chart Visualization</p>
-              </div>
-            </div>
-
-            {/* Chart Placeholder 2 */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm">
-              <h3 className="text-white font-semibold mb-6">Category-wise Farmer Distribution</h3>
-              <div className="h-64 flex items-center justify-center bg-slate-700/20 rounded-lg border border-slate-600/30">
-                <p className="text-slate-500 text-sm">Pie Chart Visualization</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="mt-8 bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700 rounded-xl p-6 backdrop-blur-sm">
-            <h3 className="text-white font-semibold mb-6">Recent Activities</h3>
-            <div className="space-y-4">
-              {[
-                { action: "New complaint registered", time: "2 hours ago", type: "complaint" },
-                { action: "Employee logged field visit", time: "4 hours ago", type: "activity" },
-                { action: "Farmer database updated", time: "6 hours ago", type: "database" },
-                { action: "Complaint resolved", time: "8 hours ago", type: "resolved" },
-              ].map((item, i) => (
+          <div className="flex justify-center gap-4 mt-3">
+            {pieData.map((entry: any) => (
+              <div key={entry.name} className="flex items-center gap-1.5">
                 <div
-                  key={i}
-                  className="flex items-center justify-between p-4 bg-slate-700/20 rounded-lg border border-slate-600/30 hover:bg-slate-700/30 transition"
-                >
-                  <div>
-                    <p className="text-slate-200 text-sm font-medium">{item.action}</p>
-                    <p className="text-slate-500 text-xs">{item.time}</p>
-                  </div>
-                  <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
-                </div>
-              ))}
-            </div>
+                  className="w-2.5 h-2.5 rounded-xl"
+                  style={{ backgroundColor: getStatusColor(entry.name) }}
+                ></div>
+                <span className="text-xs text-on-surface-variant font-medium">
+                  {entry.name}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Maharashtra Map Visualization */}
+      <div className={cn(cardBase, cardHover, "p-4 md:p-5")}>
+        <div className="h-[560px] w-full">
+          {token ? <FarmerMap token={token} /> : (
+            <div className={cn(
+              "h-full w-full rounded-xl border border-outline-variant/20",
+              "bg-surface-container-low flex items-center justify-center",
+            )}>
+              <p className="text-sm text-on-surface-variant">Sign in to view map data.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </AdminLayout>
   );
 }

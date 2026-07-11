@@ -1,0 +1,373 @@
+AI-Based Sugarcane Monitoring Field Visit Questionnaire
+(Krushik App – IoT, Remote Sensing, GIS & AI Advisory Validation)
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+
+Date of visit:
+Farmer name / Field ID:
+Location / Village:
+Planting Date
+Harvesting Date
+Area
+Has there been any rainfall during past week?
+Did you receive irrigation advisories through Krushik App?
+When was the last irrigation provided?
+Were the irrigation advisories useful?
+Which irrigation method is being used?
+Does the soil moisture displayed in Krushik App match the actual field condition?
+Is the IoT sensor functioning properly?
+Did you receive fertilizer advisories through Krushik App?
+Did you follow the fertilizer advisory provided through Krushik App?
+Have you applied fertilizer recently as per Krushik App advisory?
+Fertilizer Details
+17. Have you observed any nutrient deficiency symptoms?
+If YES like Yellowing Leaves / Stunted Growth / Reddening / Other
+18. Did you receive pest or disease alerts through the Krushik App, and have you observed
+the same pest or disease symptoms in the field?
+
+If observed, mention pest/disease name: __________________
+19. Were the pest/disease alerts useful?
+20. Have you observed any pest attack?
+If YES mention name
+21. Have you observed any disease symptoms?
+If YES mention name
+
+Autofill through PRN OR Mobile no
+
+Yes / No / Approx. Rainfall (mm)
+Yes / No
+Date / Number of days ago
+Yes / No /Remark
+Drip / Furrow / Flood
+Yes / No
+Yes / No
+Yes / No
+Yes / No
+Organic / Chemical / Both
+Type, quantity
+Yes / No
+Upload deficiency symptom photo
+□ Yes, alert received and observed in the field
+□ Yes, alert received but not observed in the field
+□ No alert received, but observed in the field
+□ No alert received and not observed in the field
+Upload photo
+Yes / No
+Yes / No
+Upload photo
+Yes / No
+Upload photo
+
+22.
+23.
+24.
+25.
+26.
+27.
+28.
+
+29.
+30.
+31.
+32.
+33.
+34.
+
+When was the last spray applied?
+Which pesticide/fungicide was used?
+Were there any spraying challenges?
+Are the Vegetative maps (NDVI, EVI) and other maps (WWM, CSM) displayed in the
+Krushik App?
+Do the Crop Health Maps (NDVI/EVI) accurately represent the actual field conditions?
+Overall, are you satisfied with AI-based recommendations provided through Krushik
+App?
+Measurements should be collected from:
+Observation Point A – Border/Corner Area
+Number of Tillers per Clump
+Average Cane Height (cm/m)
+Average Cane Girth (cm)
+Average Number of Green Leaves
+Observation Point B - Field Centre Area
+Number of Tillers per Clump
+Average Cane Height (cm/m)
+Average Cane Girth (cm)
+Average Number of Green Leaves
+Observation Point C - Opposite Corner / Stress Zone
+Number of Tillers per Clump
+Average Cane Height (cm/m)
+Average Cane Girth (cm)
+Average Number of Green Leaves
+Crop Health Condition
+What benefits have you observed from using the Krushik App?
+What challenges have you faced while using the Krushik App?
+Do you have any suggestions for improving the Krushik App or advisory services?
+Farmer's overall observations regarding crop growth, crop health, and expected yield
+Additional Remarks / Observations by Field Officer
+
+Date
+Type, quantity/dosage
+Yes / No / Remarks
+Yes / No
+Yes / No / Remarks
+Very Satisfied / Satisfied / Neutral / Unsatisfied
+
+Upload Geo-tagged Photo + Upload photos with
+measuring scale
+
+Healthy / Moderate / Weak
+
+कृत्रिम बुद्धिमत्ता आधारित ऊस त्रिक त्रििीक्षण व िडताळणी प्रश्नावली
+
+क्र.
+
+प्रश्न
+
+उत्ति
+
+1
+
+भेटीचा दिनाां क
+
+2
+
+शेतकऱ्याचे नाव / फील्ड आयडी
+
+3
+
+गाव / स्थान
+
+4
+
+लागवड दिनाां क
+
+5
+
+काढणी दिनाां क (झालेली / अपेदित)
+
+6
+
+िेत्रफळ (एकर / हे क्टर)
+
+7
+
+मागील आठवड्यात पाऊस झाला आहे का?
+
+होय / नाही / अांिाजे पजजन्यमान (दममी)
+
+8
+
+कृदिक अॅपद्वारे दसांचन सल्ला प्राप्त झाला होता का?
+
+होय / नाही
+
+9
+
+शेवटचे दसांचन कधी दिले?
+
+दिनाां क / दकती दिवसाां पूवी
+
+10
+
+दसांचन सल्ला उपयुक्त वाटला का?
+
+होय / नाही / दटप्पणी
+
+11
+
+कोणती दसांचन पद्धत वापरली जाते?
+
+दठबक / सरी / पाट
+
+12
+
+कृदिक अॅपमध्ये िशजदवलेली मातीतील ओलावा स्थस्थती प्रत्यि पररस्थस्थतीशी जुळते का?
+
+होय / नाही
+
+13
+
+IoT सेन्सर योग्य प्रकारे कायजरत आहे का?
+
+होय / नाही
+
+14
+
+कृदिक अॅपद्वारे खत व्यवस्थापन सल्ला प्राप्त झाला होता का?
+
+होय / नाही
+
+15
+
+कृदिक अॅपद्वारे दिलेल्या खत सल्ल्याचे पालन केले का?
+
+होय / नाही
+
+16
+
+अलीकडे खताां चा वापर केला आहे का? अॅपद्वारे दिलेल्या खत सल्ल्याने
+
+सेंदिय / रासायदनक / िोन्ही
+
+खताचा तपशील
+
+प्रकार, प्रमाण, वापराची तारीख
+
+अन्निव्य कमतरतेची लिणे दिसून आली आहे त का?
+
+होय / नाही
+
+असल्यास (पाने दपवळी होणे / वाढ खुांटणे / लालसरपणा / इतर)
+
+कमतरतेच्या लिणाां चा फोटो अपलोड करा
+
+17
+
+PRN दकांवा मोबाईल क्रमाां काद्वारे स्वयांचदलत (Auto-fill)
+
+□ होय, सूचना प्राप्त झाली व शेतात आढळली
+18
+
+कृदिक अॅपद्वारे कीड/रोग सूचना प्राप्त झाली होती का? आदण त्याच कीड/रोगाची लिणे प्रत्यि शेतात
+
+□ होय, सूचना प्राप्त झाली पण शेतात आढळली नाही
+
+आढळली का?
+
+□ सूचना प्राप्त झाली नाही पण शेतात आढळली
+□ सूचना प्राप्त झाली नाही आदण शेतातही आढळली नाही
+
+आढळल्यास कीड/रोगाचे नाव नमूि करा:
+
+फोटो अपलोड करा
+
+19
+
+कीड/रोग सूचना उपयुक्त वाटली का?
+
+होय / नाही
+
+20
+
+दपकावर कोणत्या दकडीचा प्रािु भाज व दिसून आला आहे का?
+
+होय / नाही
+
+असल्यास दकडीचे नाव
+
+दकडीचा फोटो अपलोड करा
+
+दपकावर रोगाची लिणे दिसून आली आहे त का?
+
+होय / नाही
+
+21
+
+असल्यास रोगाचे नाव
+
+रोगाचा फोटो अपलोड करा
+
+22
+
+शेवटची फवारणी कधी केली?
+
+दिनाां क
+
+23
+
+कोणते कीटकनाशक / बुरशीनाशक वापरले?
+
+प्रकार, प्रमाण / डोस
+
+24
+
+फवारणी करताना काही अडचणी आल्या का?
+
+होय / नाही / दटप्पणी
+
+25
+
+कृदिक अॅपमध्ये िशजदवलेले वनस्पती दनिे शाां क (NDVI, EVI) तसेच इतर नकाशे (Water Watch Map
+- WWM, Crop Stress Map - CSM) योग्यररत्या प्रिदशजत होत आहे त का?
+
+होय / नाही
+
+26
+
+NDVI/EVI आधाररत दपक आरोग्य नकाशा प्रत्यि िेत्र पररस्थस्थतीशी जुळतो का?
+
+होय / नाही / दटप्पणी
+
+27
+
+कृदिक अॅपद्वारे दिलेल्या AI आधाररत सल्ल्याां बाबत आपले एकूण समाधान काय आहे ?
+
+अत्यांत समाधानी / समाधानी / तटस्थ / असमाधानी
+
+28
+
+दनरीिणे खालील तीन दठकाणाां वरून घ्यावीत
+त्रििीक्षण त्रबिंदू A – शेताचा कड / कोििा भाग
+प्रत्येक बेटातील फुटव्याां ची सांख्या
+ऊसाची सरासरी उां ची (से.मी./मी.)
+
+दजओ-टॅ ग केलेला फोटो अपलोड करा + मोजपट्टीसह फोटो
+
+ऊसाचा सरासरी घेर / जाडी (से.मी.)
+दहरव्या पानाां ची सरासरी सांख्या
+त्रििीक्षण त्रबिंदू B – शेताचा मध्य भाग
+प्रत्येक बेटातील फुटव्याां ची सांख्या
+ऊसाची सरासरी उां ची (से.मी./मी.)
+
+दजओ-टॅ ग केलेला फोटो अपलोड करा + मोजपट्टीसह फोटो
+
+ऊसाचा सरासरी घेर / जाडी (से.मी.)
+दहरव्या पानाां ची सरासरी सांख्या
+त्रििीक्षण त्रबिंदू C – त्रवरुि टोक
+प्रत्येक बेटातील फुटव्याां ची सांख्या
+ऊसाची सरासरी उां ची (से.मी./मी.)
+
+दजओ-टॅ ग केलेला फोटो अपलोड करा + मोजपट्टीसह फोटो
+
+ऊसाचा सरासरी घेर / जाडी (से.मी.)
+दहरव्या पानाां ची सरासरी सांख्या
+29
+
+दपकाची एकूण आरोग्य स्थस्थती
+
+30
+
+कृदिक अॅप वापरल्यामुळे कोणते फायिे झाले?
+
+31
+
+कृदिक अॅप वापरताना कोणत्या अडचणी आल्या?
+
+32
+
+कृदिक अॅप दकांवा सल्ला सेवेमध्ये कोणत्या सुधारणा सुचवाल?
+
+33
+
+दपकाची वाढ, दपकाचे आरोग्य आदण अपेदित उत्पािनाबाबत शेतकऱ्याची दनरीिणे
+
+34
+
+िेत्रीय अदधकाऱ्याां ची अदतररक्त दनरीिणे / दटप्पण्या
+
+चाां गली / मध्यम / कमकुवत
+
+

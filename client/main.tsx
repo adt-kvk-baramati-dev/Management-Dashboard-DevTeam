@@ -1,5 +1,4 @@
 import "./global.css";
-import "./styles/react-theme.css";
 
 import { createRoot } from "react-dom/client";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,7 +8,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { AuthProvider } from "./lib/AuthProvider";
-import NavBar from "./components/NavBar";
 
 console.log("Main.tsx loaded");
 
@@ -22,7 +20,6 @@ const Root = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
-          <NavBar />
           <App />
         </BrowserRouter>
       </AuthProvider>
