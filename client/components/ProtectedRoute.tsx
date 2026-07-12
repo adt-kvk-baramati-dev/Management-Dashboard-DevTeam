@@ -10,8 +10,9 @@ export default function ProtectedRoute({
 }) {
   const { user, profile, loading } = useAuth();
 
+  const profileRole = profile?.role as "admin" | "employee" | undefined;
   const resolvedRole: "admin" | "employee" | null =
-    profile?.role ??
+    profileRole ??
     (user?.role === "admin" || user?.role === "employee" ? user.role : null);
 
   if (loading) {

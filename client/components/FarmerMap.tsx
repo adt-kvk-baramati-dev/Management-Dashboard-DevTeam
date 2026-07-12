@@ -216,7 +216,7 @@ export default function FarmerMap({ token }: FarmerMapProps) {
         if (!res.ok) return;
         const json = await res.json();
         const rows: { district?: string; taluka?: string; village?: string; count?: number }[] =
-          json.locations ?? [];
+          json.farmers ?? json.locations ?? [];
 
         const dc: Record<string, number> = {};
         const tc: Record<string, number> = {};

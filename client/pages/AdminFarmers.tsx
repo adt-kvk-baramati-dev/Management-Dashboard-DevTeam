@@ -330,6 +330,9 @@ export default function AdminFarmers() {
       state: farmer.state ?? "",
       crop: farmer.crop ?? "",
       farmSize: farmer.farmSize ?? "",
+      planting_date: farmer.planting_date ?? "",
+      season: farmer.season ?? "",
+      variety: farmer.variety ?? "",
     });
     setSelectedFarmer(farmer);
     setFormError(null);

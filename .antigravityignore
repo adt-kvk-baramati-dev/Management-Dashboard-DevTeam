@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.builder/
+
+# Git
+.git/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Generated GeoJSON (hosted on S3)
+public/geojson/
+client/public/geojson/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.eslintcache
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+
+# Temporary
+tmp/
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Lock files (optional)
+package-lock.json
+
+# Large binary assets that don't help code understanding
+*.pdf
+*.xlsx
+
+# Documentation (optional)
+COMPLAINT_REFACTOR_COMPLETE.md
+OPTIONAL_INTEGRATIONS.md
+MONGO_SCHEMA.md
+RED_ALERT_FEATURE.md
+questionnaire_extracted.txt

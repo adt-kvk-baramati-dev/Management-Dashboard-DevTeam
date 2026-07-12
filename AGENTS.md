@@ -1,175 +1,248 @@
-# Fusion Starter
+# KVK Digital Management Dashboard
 
-A production-ready full-stack React application template with integrated Express server, featuring React Router 6 SPA mode, TypeScript, Vitest, Zod and modern tooling.
+Production-ready KVK (Krishi Vigyan Kendra) Management Dashboard built with React, Express, MongoDB and AWS S3.
 
-While the starter comes with a express server, only create endpoint when strictly neccesary, for example to encapsulate logic that must leave in the server, such as private keys handling, or certain DB operations, db...
+---
 
-## Tech Stack
+# Tech Stack
 
-- **PNPM**: Prefer pnpm
-- **Frontend**: React 18 + React Router 6 (spa) + TypeScript + Vite + TailwindCSS 3
-- **Backend**: Express server integrated with Vite dev server
-- **Testing**: Vitest
-- **UI**: Radix UI + TailwindCSS 3 + Lucide React icons
+Frontend
 
-## Project Structure
+- React 18
+- React Router 6
+- TypeScript
+- Vite
+- TailwindCSS
+- Radix UI
+- Lucide React
 
-```
-client/                   # React SPA frontend
-├── pages/                # Route components (Index.tsx = home)
-├── components/ui/        # Pre-built UI component library
-├── App.tsx                # App entry point and with SPA routing setup
-└── global.css            # TailwindCSS 3 theming and global styles
+Backend
 
-server/                   # Express API backend
-├── index.ts              # Main server setup (express config + routes)
-└── routes/               # API handlers
+- Express
+- MongoDB
+- JWT Authentication
+- AWS S3
+- TypeScript
 
-shared/                   # Types used by both client & server
-└── api.ts                # Example of how to share api interfaces
-```
+Package Manager
 
-## Key Features
+- pnpm
 
-## SPA Routing System
+---
 
-The routing system is powered by React Router 6:
+# Project Structure
 
-- `client/pages/Index.tsx` represents the home page.
-- Routes are defined in `client/App.tsx` using the `react-router-dom` import
-- Route files are located in the `client/pages/` directory
+client/
+    pages/
+    components/
+    hooks/
+    lib/
+    styles/
 
-For example, routes can be defined with:
+server/
+    index.ts
+    routes/
 
-```typescript
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+shared/
+    api.ts
+    appConstants.ts
 
-<Routes>
-  <Route path="/" element={<Index />} />
-  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-  <Route path="*" element={<NotFound />} />
-</Routes>;
-```
+scripts/
+    data generation
+    import utilities
+    seed utilities
 
-### Styling System
+public/
+    static assets only
 
-- **Primary**: TailwindCSS 3 utility classes
-- **Theme and design tokens**: Configure in `client/global.css`
-- **UI components**: Pre-built library in `client/components/ui/`
-- **Utility**: `cn()` function combines `clsx` + `tailwind-merge` for conditional classes
+---
 
-```typescript
-// cn utility usage
-className={cn(
-  "base-classes",
-  { "conditional-class": condition },
-  props.className  // User overrides
-)}
-```
+# Important Notes
 
-### Express Server Integration
+GeoJSON files are NOT stored in Git.
 
-- **Development**: Single port (8080) for both frontend/backend
-- **Hot reload**: Both client and server code
-- **API endpoints**: Prefixed with `/api/`
+GeoJSON files are hosted on AWS S3.
 
-#### Example API Routes
+Never regenerate or commit GeoJSON unless explicitly requested.
 
-- `GET /api/ping` - Simple ping api
-- `GET /api/demo` - Demo endpoint
+---
 
-### Shared Types
+# Coding Guidelines
 
-Import consistent types in both client and server:
+Always:
 
-```typescript
-import { DemoResponse } from "@shared/api";
-```
+- Use TypeScript strict typing.
+- Prefer existing utilities over creating new ones.
+- Reuse UI components.
+- Keep styling consistent with Tailwind.
+- Use shared interfaces whenever possible.
+- Use pnpm instead of npm.
 
-Path aliases:
+Avoid:
 
-- `@shared/*` - Shared folder
-- `@/*` - Client folder
+- Duplicated business logic.
+- Creating API endpoints unless server-side logic is required.
+- Hardcoded values.
+- Hardcoded secrets.
 
-## Development Commands
+---
 
-```bash
-pnpm dev        # Start dev server (client + server)
-pnpm build      # Production build
-pnpm start      # Start production server
-pnpm typecheck  # TypeScript validation
-pnpm test          # Run Vitest tests
-```
+# Backend Guidelines
 
-## Adding Features
+Current backend entry point:
 
-### Add new colors to the theme
+server/index.ts
 
-Open `client/global.css` and `tailwind.config.ts` and add new tailwind colors.
+Current size:
 
-### New API Route
+~4260 lines
 
-1. **Optional**: Create a shared interface in `shared/api.ts`:
+This file is too large.
 
-```typescript
-export interface MyRouteResponse {
-  message: string;
-  // Add other response properties here
-}
-```
+When modifying backend code:
 
-2. Create a new route handler in `server/routes/my-route.ts`:
+Prefer moving code into:
 
-```typescript
-import { RequestHandler } from "express";
-import { MyRouteResponse } from "@shared/api"; // Optional: for type safety
+server/routes/
+server/controllers/
+server/services/
+server/middleware/
+server/utils/
+server/config/
 
-export const handleMyRoute: RequestHandler = (req, res) => {
-  const response: MyRouteResponse = {
-    message: "Hello from my endpoint!",
-  };
-  res.json(response);
-};
-```
+instead of increasing the size of index.ts.
 
-3. Register the route in `server/index.ts`:
+Do not change behaviour while refactoring.
 
-```typescript
-import { handleMyRoute } from "./routes/my-route";
+---
 
-// Add to the createServer function:
-app.get("/api/my-endpoint", handleMyRoute);
-```
+# Frontend Guidelines
 
-4. Use in React components with type safety:
+Pages belong in
 
-```typescript
-import { MyRouteResponse } from "@shared/api"; // Optional: for type safety
+client/pages/
 
-const response = await fetch("/api/my-endpoint");
-const data: MyRouteResponse = await response.json();
-```
+Reusable UI belongs in
 
-### New Page Route
+client/components/
 
-1. Create component in `client/pages/MyPage.tsx`
-2. Add route in `client/App.tsx`:
+Business logic belongs in
 
-```typescript
-<Route path="/my-page" element={<MyPage />} />
-```
+client/lib/
 
-## Production Deployment
+Reusable hooks belong in
 
-- **Standard**: `pnpm build`
-- **Binary**: Self-contained executables (Linux, macOS, Windows)
-- **Cloud Deployment**: Use either Netlify or Vercel via their MCP integrations for easy deployment. Both providers work well with this starter template.
+client/hooks/
 
-## Architecture Notes
+Avoid placing API logic directly inside components.
 
-- Single-port development with Vite + Express integration
-- TypeScript throughout (client, server, shared)
-- Full hot reload for rapid development
-- Production-ready with multiple deployment options
-- Comprehensive UI component library included
-- Type-safe API communication via shared interfaces
+---
+
+# Authentication
+
+Uses JWT authentication.
+
+Never hardcode:
+
+- JWT secret
+- MongoDB URI
+- AWS credentials
+
+Read all secrets from environment variables.
+
+---
+
+# Maps
+
+Maps load GeoJSON from AWS S3.
+
+Do not regenerate GeoJSON.
+
+Do not commit generated GeoJSON.
+
+---
+
+# Before Creating New Code
+
+Always:
+
+1. Search for existing implementation.
+2. Search for reusable components.
+3. Search for reusable utilities.
+4. Reuse existing API endpoints where possible.
+
+---
+
+# Refactoring Rules
+
+Prefer:
+
+Small focused files.
+
+Target sizes:
+
+Components:
+<300 lines
+
+Hooks:
+<200 lines
+
+Utilities:
+<250 lines
+
+Routes:
+<250 lines
+
+Services:
+<400 lines
+
+Avoid adding more code to server/index.ts.
+
+---
+
+# Current Refactoring Priority
+
+Highest priority:
+
+Refactor
+
+server/index.ts
+
+into
+
+- routes
+- controllers
+- services
+- middleware
+- config
+
+without changing application behaviour.
+
+Maintain backward compatibility.
+
+---
+
+# Development Commands
+
+pnpm dev
+
+pnpm build
+
+pnpm start
+
+pnpm test
+
+pnpm typecheck
+
+---
+
+# AI Agent Instructions
+
+Before writing any code:
+
+- Read existing implementation.
+- Preserve existing functionality.
+- Keep TypeScript error free.
+- Avoid duplicate code.
+- Prefer modular architecture.
+- Minimize breaking changes.

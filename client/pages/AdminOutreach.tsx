@@ -27,6 +27,8 @@ interface OutreachRecord {
   district?: string;
   village?: string;
   created_at?: string;
+  remark?: string;
+  observations?: string;
 }
 
 interface EmployeeAggregatedRow {

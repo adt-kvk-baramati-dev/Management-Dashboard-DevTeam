@@ -35,7 +35,7 @@ export default function EmployeeComplaintRegistration() {
     district: "",
     taluka: "",
     village: "",
-    complaint_type: COMPLAINT_CATEGORIES[0],
+    complaint_type: COMPLAINT_CATEGORIES[0] as ComplaintType,
     complaint: "",
   });
 

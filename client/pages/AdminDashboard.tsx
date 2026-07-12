@@ -1,36 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
-import {
-  Users,
-  AlertCircle,
-  MapPin,
-  TrendingUp,
-  CheckCircle2,
-  ListTodo,
-} from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, } from "recharts";
+import { Users, AlertCircle, MapPin, TrendingUp, CheckCircle2, ListTodo, } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
@@ -41,6 +14,7 @@ import FarmerMap from "@/components/FarmerMap";
 export default function AdminDashboard() {
   const { token } = useAuth();
   const [stats, setStats] = useState<any>(null);
+
   const [recentComplaints, setRecentComplaints] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -66,9 +40,48 @@ export default function AdminDashboard() {
       ]);
 
       const statsJson = await statsRes.json();
-      const complaintsJson = await complaintsRes.json();
+      console.log("Stats API Response:", statsJson);
 
-      setStats(statsJson);
+      const complaintsJson = await complaintsRes.json();
+      
+      const last6Months: string[] = [];
+      const d = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
+        last6Months.push(past.toLocaleString("default", { month: "short" }));
+      }
+      
+      const monthlyMap: Record<string, number> = {};
+      last6Months.forEach(m => monthlyMap[m] = 0);
+
+      (complaintsJson.complaints || []).forEach((c: any) => {
+        const date = new Date(c.created_at || c.createdAt || c.date);
+        if (isNaN(date.getTime())) return;
+        
+        const month = date.toLocaleString("default", { month: "short" });
+        if (monthlyMap[month] !== undefined) {
+          monthlyMap[month]++;
+        }
+      });
+
+      const chart = last6Months.map(month => ({ month, complaints: monthlyMap[month] }));
+
+      const statusMap: Record<string, number> = {};
+      (complaintsJson.complaints || []).forEach((c: any) => {
+        const status = c.solve_status || "Pending";
+        statusMap[status] = (statusMap[status] || 0) + 1;
+      });
+
+      setStats({
+        totalFarmers: statsJson.registeredFarmers,
+        totalComplaints: (statsJson.openComplaints ?? 0) + (statsJson.resolvedComplaints ?? 0),
+        pendingComplaints: statsJson.openComplaints,
+        activeEmployees: statsJson.activeEmployees,
+        outreachSessions: statsJson.outreachSessions ?? 0,
+        samplingActivities: statsJson.samplingActivities ?? 0,
+        chartData: chart,
+        pieData: Object.entries(statusMap).map(([name, value]) => ({ name, value }))
+      });
       setRecentComplaints((complaintsJson.complaints || []).slice(0, 5));
     } catch (error) {
       console.error("Dashboard fetch error:", error);
@@ -213,41 +226,41 @@ export default function AdminDashboard() {
 
   const StatCard = ({ title, value, icon: Icon, trend, colorClass, href }: any) => {
     const CardContent = (
-      <div className={cn( cardBase , "relative overflow-hidden" , "h-full p-6 group cursor-pointer","rounded-3xl","shadow-lg hover:shadow-[0_20px_50px_rgba(59,130,246,0.25)]" ,"hover:-translate-y-1","transition-all duration-300",cardHover,)}>
+      <div className={cn(cardBase, "relative overflow-hidden", "h-full p-6 group cursor-pointer", "rounded-3xl", "shadow-lg hover:shadow-[0_20px_50px_rgba(59,130,246,0.25)]", "hover:-translate-y-1", "transition-all duration-300", cardHover,)}>
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-400" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2 group-hover:text-primary transition-colors">
-                    {title}
-                </p>
-    
-                <h3 className="text-4xl font-bold tracking-tight text-on-surface leading-none tabular-nums">
-                  {Number(value).toLocaleString()}
-                </h3>
-              </div>
-              <div
-                className={cn(
-                  "p-4 rounded-2xl",
-                  "shadow-sm",
-                  "group-hover:scale-110",
-                  "transition-all duration-300",
-                  colorClass,
-                )}
-              >
-                <Icon className="w-6 h-6" />
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-xs text-on-surface-variant font-medium">
-                {trend}
-              </p>
-            
-              <span className="px-2 py-1 text-[10px] rounded-full bg-green-100 text-green-700 font-semibold">
-                Live
-              </span>
-            </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2 group-hover:text-primary transition-colors">
+              {title}
+            </p>
+
+            <h3 className="text-4xl font-bold tracking-tight text-on-surface leading-none tabular-nums">
+              {Number(value).toLocaleString()}
+            </h3>
           </div>
+          <div
+            className={cn(
+              "p-4 rounded-2xl",
+              "shadow-sm",
+              "group-hover:scale-110",
+              "transition-all duration-300",
+              colorClass,
+            )}
+          >
+            <Icon className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-xs text-on-surface-variant font-medium">
+            {trend}
+          </p>
+
+          <span className="px-2 py-1 text-[10px] rounded-full bg-green-100 text-green-700 font-semibold">
+            Live
+          </span>
+        </div>
+      </div>
     );
 
     if (href) {
@@ -276,120 +289,28 @@ export default function AdminDashboard() {
     }
     return "bg-secondary-fixed/70 text-on-secondary-fixed-variant border-secondary-fixed-dim/70";
   };
-return (
-  <AdminLayout title="farmers, complaints...">
+  return (
+    <AdminLayout title="farmers, complaints...">
 
-    {/* Dashboard Header */}
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      {/* Dashboard Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
 
-      <div className="flex items-center gap-4">
-        <div className="h-14 w-14 rounded-3xl bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-500 flex items-center justify-center text-white text-2xl shadow-lg">
-          📊
-        </div>
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-3xl bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-500 flex items-center justify-center text-white text-2xl shadow-lg">
+            📊
+          </div>
 
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-            Admin Dashboard
-          </h1>
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+              Admin Dashboard
+            </h1>
 
-          <p className="text-sm text-slate-500 mt-1">
-            Real-time monitoring of farmers, complaints, outreach and field activities
-          </p>
+            <p className="text-sm text-slate-500 mt-1">
+              Real-time monitoring of farmers, complaints, outreach and field activities
+            </p>
+          </div>
         </div>
       </div>
-
-      {/* <div className="flex gap-3">
-
-        <Button
-          onClick={generateReport}
-          disabled={loading || reportGenerating}
-          className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          {reportGenerating ? "Generating..." : "Generate Report"}
-        </Button>
-
-        <Dialog
-          open={isNotifyOpen}
-          onOpenChange={setIsNotifyOpen}
-        >
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              disabled={loading}
-              className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Send Notification
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent
-            className={cn(
-              "max-w-xl",
-              "bg-surface-container-lowest",
-              "text-on-surface",
-              "border border-outline-variant/30",
-              "rounded-2xl shadow-sm"
-            )}
-          >
-            <DialogHeader>
-              <DialogTitle className="font-headline text-on-surface">
-                Send Notification
-              </DialogTitle>
-
-              <DialogDescription className="text-on-surface-variant">
-                This message will be sent to employees.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                Message
-              </p>
-
-              <Input
-                value={notifyMessage}
-                onChange={(e) =>
-                  setNotifyMessage(e.target.value)
-                }
-                placeholder="E.g., Field visit schedule updated for today"
-                className={cn(
-                  "rounded-xl",
-                  "bg-surface-container-low",
-                  "border-outline-variant/40",
-                  "text-on-surface"
-                )}
-              />
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setIsNotifyOpen(false)
-                }
-              >
-                Cancel
-              </Button>
-
-              <Button
-                onClick={() =>
-                  sendNotification(notifyMessage)
-                }
-                disabled={
-                  notificationSending ||
-                  notifyMessage.trim().length === 0
-                }
-              >
-                {notificationSending
-                  ? "Sending..."
-                  : "Send"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-      </div> */}
-    </div>
 
       {loadError ? (
         <div
@@ -420,7 +341,7 @@ return (
                 </div>
                 <Skeleton className="h-10 w-10 rounded-xl bg-surface-container-low" />
               </div>
-                <Skeleton className="h-3 w-28 rounded-xl bg-surface-container-low" />
+              <Skeleton className="h-3 w-28 rounded-xl bg-surface-container-low" />
             </div>
           ))
         ) : (
@@ -473,8 +394,14 @@ return (
               colorClass="bg-secondary-fixed/70 text-on-secondary-fixed-variant"
               href="/admin/employees"
             />
-            {/* Red Alert Card */}
-            
+            <StatCard
+              title="Critical Alerts"
+              value={stats?.pendingComplaints || 0}
+              icon={AlertCircle}
+              trend="Requires attention"
+              colorClass="bg-error/10 text-error border border-error/20"
+              href="/admin/complaints?status=Pending"
+            />
           </>
         )}
       </div>
